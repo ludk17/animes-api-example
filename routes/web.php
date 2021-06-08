@@ -92,8 +92,7 @@ Route::post('{code}/anime/favorite', function (Request $request, $code) {
             'anime_id' => $id
         ]);
         return "favorito creado";
-    }
-    else {
+    } else {
         $anime->delete();
         return "favorito eliminado";
     }
@@ -115,30 +114,31 @@ Route::get('animes', function (Request $request) {
         $query->where('nombre', 'like', "%{$q}%");
     }
 
-    return $query->get();
+    return $query->get()->map(function ($item) {
+        $item->imagen = URL::to(str_replace('http://animes.lumenagile.com', ''));
+        return $item;
+    });
 });
 
 
 
-Route::get('pokemons/{code}', function(Request $request, $code) {
+Route::get('pokemons/{code}', function (Request $request, $code) {
 
     $query = Pokemon::where('codigo', $code);
 
     return $query->get();
-
 });
 
 
-Route::get('pokemons/{code}/atrapados', function(Request $request, $code) {
+Route::get('pokemons/{code}/atrapados', function (Request $request, $code) {
 
     $query = Pokemon::where('codigo', $code)->where('esta_atrapado', true);
 
     return $query->get();
-
 });
 
 
-Route::post('pokemons/{code}/crear', function(Request $request, $code) {
+Route::post('pokemons/{code}/crear', function (Request $request, $code) {
 
     $model = Pokemon::create([
         'codigo'     => $code,
@@ -151,11 +151,10 @@ Route::post('pokemons/{code}/crear', function(Request $request, $code) {
     $model->save();
 
     return $model;
-
 });
 
 
-Route::post('pokemons/{code}/atrapar/{pokemon}', function(Request $request, $code, $pokemon) {
+Route::post('pokemons/{code}/atrapar/{pokemon}', function (Request $request, $code, $pokemon) {
 
     $model = Pokemon::find($pokemon);
     $model->esta_atrapado = !$model->esta_atrapado;
@@ -163,19 +162,17 @@ Route::post('pokemons/{code}/atrapar/{pokemon}', function(Request $request, $cod
     $model->save();
 
     return $model;
-
 });
 
 
-Route::get('{code}/frutas', function(Request $request, $code) {
+Route::get('{code}/frutas', function (Request $request, $code) {
 
     $query = Fruta::where('codigo', $code);
 
     return $query->get();
-
 });
 
-Route::post('{codigo}/frutas/crear', function(Request $request, $codigo) {
+Route::post('{codigo}/frutas/crear', function (Request $request, $codigo) {
 
     $model = Fruta::create([
         'nombre' => $request->get('nombre'),
@@ -186,10 +183,9 @@ Route::post('{codigo}/frutas/crear', function(Request $request, $codigo) {
 
 
     return $model;
-
 });
 
-Route::post('{code}/frutas/{fruta_id}/megusta', function(Request $request, $code, $fruta_id) {
+Route::post('{code}/frutas/{fruta_id}/megusta', function (Request $request, $code, $fruta_id) {
 
     $model = Fruta::find($fruta_id);
 
@@ -198,5 +194,4 @@ Route::post('{code}/frutas/{fruta_id}/megusta', function(Request $request, $code
     $model->save();
 
     return $model;
-
 });
